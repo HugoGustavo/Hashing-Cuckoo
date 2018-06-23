@@ -147,5 +147,14 @@ public class HashTableCuckoo<Chave, Valor> {
 		return (double) ( this.tamanho() / this.capacidade);
 	}
 	
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for(int i = 0; i < tabela.length; i++) {
+			if ( tabela[i] != null ) {
+				stringBuilder.append(i + " -> " + "(" + tabela[i].getChave() + "," + tabela[i].getValor() + ")\n");
+			}
+		}
+		return stringBuilder.toString();
+	}
 
 }
