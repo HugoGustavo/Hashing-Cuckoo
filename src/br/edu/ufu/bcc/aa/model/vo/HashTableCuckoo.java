@@ -12,14 +12,11 @@ public class HashTableCuckoo<Chave, Valor> {
 	private int capacidade;
 	private int a, b;
 
-	
-	
 	public HashTableCuckoo(int capacidade) {
 		if (capacidade <= 0)
 			this.capacidade = 1;
 		else
 			this.capacidade = capacidade;
-		
 		this.tabela = new Entrada[this.capacidade];
 		selecionarA();
 		selecionarB();
@@ -144,6 +141,10 @@ public class HashTableCuckoo<Chave, Valor> {
 		}
 		
 		return false;
+	}
+	
+	public double fatorCarga() {
+		return (double) ( this.tamanho() / this.capacidade);
 	}
 	
 
