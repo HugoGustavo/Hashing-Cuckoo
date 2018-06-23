@@ -7,9 +7,12 @@ import java.util.Random;
 import java.util.Set;
 
 public class HashTableCuckoo<Chave, Valor> {
-	private int capacidade;
 	private Entrada<Chave, Valor>[] tabela = null;
+	private final int  p = 0xffffff;
+	private int capacidade;
 	private int a, b;
+
+	
 	
 	public HashTableCuckoo(int capacidade) {
 		if (capacidade <= 0)
@@ -117,13 +120,13 @@ public class HashTableCuckoo<Chave, Valor> {
 	private void selecionarA() {
 		do {
 			Random random = new Random();
-			this.a = random.nextInt();
+			this.a = random.nextInt(this.p);
 		} while (this.a == 0);	
 	}
 	
 	private void selecionarB() {
 		Random random = new Random();
-		this.b = random.nextInt();
+		this.b = random.nextInt(this.p);
 	}
 	
 	public boolean remover(Chave chave, Valor valor) {
