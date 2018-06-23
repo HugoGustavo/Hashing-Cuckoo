@@ -94,9 +94,8 @@ public class HashTableCuckoo<Chave, Valor> {
 		}
 		rehash();
 		inserir(chave, valor);
-		
-		
-		// Reset 
+		selecionarA();
+		selecionarB();
 	}
 	
 	private void rehash() {
