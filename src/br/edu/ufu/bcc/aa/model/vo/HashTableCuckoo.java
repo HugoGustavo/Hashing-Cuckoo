@@ -6,20 +6,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class HashTableCuckoo<Chave, Valor> {
-	private Entrada<Chave, Valor>[] tabela = null;
-	private final int  p = 0xffffff;
+public class HashTableCuckoo {
+	private Integer[] tabela = null;
+	private final int p = 2147483647;
 	private int capacidade;
-	private int a, b;
+	private int a = 37, b = 17;
 
-	public HashTableCuckoo(int capacidade) {
-		if (capacidade <= 0)
-			this.capacidade = 1;
-		else
-			this.capacidade = capacidade;
-		this.tabela = new Entrada[this.capacidade];
-		selecionarA();
-		selecionarB();
+	public HashTableCuckoo() {
+		this.capacidade = 1;
+		this.tabela = new Integer[this.capacidade];
 	}
 	
 	public int tamanho() {
@@ -31,43 +26,43 @@ public class HashTableCuckoo<Chave, Valor> {
 	}
 	
 	public void limpar() {
-		this.tabela = new Entrada[this.capacidade];
+		this.tabela = new Integer[this.capacidade];
 	}
 	
-	public List<Valor> valores() {
-		List<Valor> valores = new ArrayList<Valor>();
+	public List<Integer> valores() {
+		List<Integer> valores = new ArrayList<Integer>();
 		for (int i = 0; i < tabela.length; i++)
 			if ( this.tabela[i] != null )
-				valores.add(this.tabela[i].getValor());
+				valores.add(this.tabela[i]);
 		return valores;
 	}
 	
-	public Set<Chave> chaves(){
-		Set<Chave> chaves = new HashSet<Chave>();
+	public Set<Integer> chaves(){
+		Set<Integer> chaves = new HashSet<Integer>();
 		for(int i = 0; i < tabela.length; i++)
 			if( this.tabela[i] != null)
-				chaves.add(this.tabela[i].getChave());
+				chaves.add(this.tabela[i]);
 		return chaves;
 	}
 	
-	public int hash1(Chave chave) {
-		return chave.hashCode() % this.capacidade;
+	public int hash1(Integer chave) {
+		return chave % this.capacidade;
 	}
 	
-	public int hash2(Chave chave) {
-		return ( ( this.a * chave.hashCode() + this.b) % this.capacidade );
+	public int hash2(Integer chave) {
+		return  ( (( this.a * chave + this.b ) % this.p) % this.capacidade );
 	}
 	
-	public void inserir(Chave chave, Valor valor) {
+	public void inserir(Integer chave) {
 		int indice = hash1(chave);
 		int indice2 = hash2(chave);
 		
 		// Verificando se existe entrada na tabela
-		if (this.tabela[indice] != null && this.tabela[indice].getValor().equals(valor) ) {
+		if (this.tabela[indice] != null && this.tabela[indice].equals(chave) ) {
 			return;
 		}
 		
-		if ( this.tabela[indice2] != null && this.tabela[indice2].getValor().equals(valor) ) {
+		if ( this.tabela[indice2] != null && this.tabela[indice2].equals(chave) ) {
 			return;
 		}
 		
@@ -75,12 +70,10 @@ public class HashTableCuckoo<Chave, Valor> {
 		int posicao = indice;
 		for ( int i = 0; i < this.capacidade; i++ ) {
 			if ( this.tabela[posicao] == null ) {
-				Entrada<Chave,Valor> entrada = new Entrada<Chave,Valor>(chave, valor);
-				this.tabela[posicao] = entrada;
+				this.tabela[posicao] = chave;
 				return;
 			}
-			chave = this.tabela[posicao].getChave();
-			valor = this.tabela[posicao].getValor();
+			chave = this.tabela[posicao];
 			
 			int h1 = hash1(chave);
 			int h2 = hash2(chave);
@@ -93,49 +86,49 @@ public class HashTableCuckoo<Chave, Valor> {
 			}
 		}
 		rehash();
-		inserir(chave, valor);
+		inserir(chave);
 		selecionarA();
 		selecionarB();
 	}
 	
 	private void rehash() {
 		// Antigos Valores
-		Entrada<Chave, Valor>[] tabelaCopia = this.tabela;
+		Integer[] tabelaCopia = this.tabela;
 		
 		// Novos valores
-		this.capacidade = (this.capacidade * 2) + 1;
-		this.tabela = new Entrada[this.capacidade];
+		this.capacidade = (this.capacidade * 2);
+		this.tabela = new Integer[this.capacidade];
 		
 		for (int i = 0; i < tabelaCopia.length; i++) {
 			if ( this.tabela[i] != null )
-				inserir(this.tabela[i].getChave(), this.tabela[i].getValor());
+				inserir(this.tabela[i]);
 		}
 		selecionarA();
 		selecionarB();
 	}
 	
 	private void selecionarA() {
+		Random random = new Random();
 		do {
-			Random random = new Random();
-			this.a = random.nextInt(this.p);
+			this.a = random.nextInt(37);
 		} while (this.a == 0);	
 	}
 	
 	private void selecionarB() {
 		Random random = new Random();
-		this.b = random.nextInt(this.p);
+		this.b = random.nextInt(17);
 	}
 	
-	public boolean remover(Chave chave, Valor valor) {
+	public boolean remover(Integer chave) {
 		int indice = hash1(chave);
 		int indice2 = hash2(chave);
 		
-		if ( this.tabela[indice] != null && this.tabela[indice].getValor().equals(valor) ) {
+		if ( this.tabela[indice] != null && this.tabela[indice].equals(chave) ) {
 			this.tabela[indice] = null;
 			return true;
 		}
 		
-		if ( this.tabela[indice2] != null && this.tabela[indice].getValor().equals(valor) ) {
+		if ( this.tabela[indice2] != null && this.tabela[indice].equals(chave) ) {
 			this.tabela[indice2] = null;
 			return true;
 		}
@@ -144,17 +137,23 @@ public class HashTableCuckoo<Chave, Valor> {
 	}
 	
 	public double fatorCarga() {
-		return (double) ( this.tamanho() / this.capacidade);
+		return (double)(this.tamanho()) / (double)(this.capacidade);
 	}
 	
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		for(int i = 0; i < tabela.length; i++) {
 			if ( tabela[i] != null ) {
-				stringBuilder.append(i + " -> " + "(" + tabela[i].getChave() + "," + tabela[i].getValor() + ")\n");
+				stringBuilder.append(i + " -> " + "(" + tabela[i] + "," + tabela[i] + ")\n");
 			}
 		}
+		stringBuilder.append("A: " + this.a + "\n");
+		stringBuilder.append("B: " + this.b + "\n");
 		return stringBuilder.toString();
+	}
+	
+	public int getCapacidade() {
+		return this.capacidade;
 	}
 
 }
