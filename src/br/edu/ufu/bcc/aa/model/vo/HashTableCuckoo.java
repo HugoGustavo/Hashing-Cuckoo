@@ -68,7 +68,8 @@ public class HashTableCuckoo {
 		
 		
 		int posicao = indice;
-		for ( int i = 0; i < this.capacidade; i++ ) {
+		int quantidadeElementos = this.tamanho();
+		for ( int i = 0; i < quantidadeElementos; i++ ) {
 			if ( this.tabela[posicao] == null ) {
 				this.tabela[posicao] = chave;
 				return;
